@@ -1,19 +1,21 @@
 {
-  "name": "Nexus Chat",
-  "short_name": "Nexus",
-  "description": "Chat Premium Privado P2P",
+  "name": "MAX Chat",
+  "short_name": "MAX",
+  "description": "Premium Private Chat by MAX",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0c0c0e",
   "theme_color": "#6366f1",
   "icons": [
     {
-      "src": "https://api.dicebear.com/7.x/shapes/png?seed=Nexus&backgroundColor=6366f1",
+      "src": "./logo.png",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://api.dicebear.com/7.x/shapes/png?seed=Nexus&backgroundColor=6366f1",
+      "src": "./logo.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     }

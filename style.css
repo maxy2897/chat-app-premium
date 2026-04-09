@@ -62,10 +62,16 @@ body {
 }
 
 .sidebar-header {
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+}
+
+.main-logo {
+  height: 32px;
+  width: auto;
+  filter: brightness(1.2);
 }
 
 .sidebar-header h1 {
