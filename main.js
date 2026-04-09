@@ -4,7 +4,7 @@
 
 const state = {
     username: localStorage.getItem('max_user') || '',
-    room: localStorage.getItem('max_room') || '',
+    room: '', // Se requerirá que el usuario lo introduzca manualmente en cada sesión
     messages: [],
     socket: null
 };
@@ -93,14 +93,13 @@ function renderUserList(users) {
  * UI Functions
  */
 function init() {
-    // Si ya tenemos datos guardados, saltamos el modal
-    if (state.username && state.room) {
-        if (nameModal) nameModal.classList.add('hidden');
-        setupUserUI();
-        initSocket();
-    } else {
-        if (nameModal) nameModal.classList.remove('hidden');
+    // Si ya tenemos nombre, lo precargamos en el input para comodidad
+    if (state.username && usernameEntry) {
+        usernameEntry.value = state.username;
     }
+    
+    // Mostramos siempre el modal porque la sala ya no es persistente
+    if (nameModal) nameModal.classList.remove('hidden');
 }
 
 function setupUserUI() {
@@ -179,8 +178,8 @@ startBtn.addEventListener('click', () => {
         state.username = userVal;
         state.room = roomVal;
         localStorage.setItem('max_user', userVal);
-        localStorage.setItem('max_room', roomVal);
-        nameModal.classList.add('hidden');
+        // NO guardamos 'max_room' para obligar a pedirlo la próxima vez
+        if (nameModal) nameModal.classList.add('hidden');
         setupUserUI();
         initSocket();
     }
@@ -202,10 +201,8 @@ exportChatBtn.addEventListener('click', () => {
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-        if (confirm('¿Seguro que quieres salir de la sala? Tendrás que volver a ingresar tu nombre y código de conexión.')) {
-            localStorage.removeItem('max_user');
-            localStorage.removeItem('max_room');
-            window.location.href = window.location.pathname; // Recargar sin hash
+        if (confirm('¿Seguro que quieres salir de la sala?')) {
+            window.location.reload();
         }
     });
 }
