@@ -95,14 +95,14 @@ function renderUserList(users) {
 function init() {
     // Si ya tenemos datos guardados, saltamos el modal
     if (state.username && state.room) {
-        nameModal.classList.add('hidden');
+        if (nameModal) nameModal.classList.add('hidden');
         setupUserUI();
         initSocket();
     } else {
-        nameModal.classList.remove('hidden');
+        if (nameModal) nameModal.classList.remove('hidden');
         // Pre-rellenar sala si viene en la URL
         const hash = window.location.hash.replace('#', '');
-        if (hash) {
+        if (hash && roomEntry) {
             roomEntry.value = hash;
         }
     }
