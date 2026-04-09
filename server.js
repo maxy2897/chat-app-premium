@@ -37,24 +37,44 @@ if (!fs.existsSync(DB_PATH)) {
     fs.writeJsonSync(DB_PATH, []);
 }
 
+// Objeto para rastrear usuarios: { roomId: { socketId: username } }
+const rooms = {};
+
 io.on('connection', (socket) => {
     console.log('Nuevo usuario conectado:', socket.id);
 
-    // Enviar historial al conectar
-    const history = fs.readJsonSync(DB_PATH);
-    socket.emit('init_history', history);
+    socket.on('join_room', ({ roomCode, username }) => {
+        socket.join(roomCode);
+        
+        // Registrar usuario en la sala
+        if (!rooms[roomCode]) rooms[roomCode] = {};
+        rooms[roomCode][socket.id] = username;
+        
+        console.log(`Usuario ${username} se unió a la sala: ${roomCode}`);
+        
+        // Enviar historial de la sala
+        const history = fs.readJsonSync(DB_PATH).filter(m => m.room === roomCode);
+        socket.emit('init_history', history);
+
+        // Notificar a todos en la sala la nueva lista de usuarios
+        io.to(roomCode).emit('update_user_list', Object.values(rooms[roomCode]));
+    });
 
     socket.on('new_message', (msg) => {
-        // Guardar mensaje en disco local
         const currentData = fs.readJsonSync(DB_PATH);
         currentData.push(msg);
+        fs.writeJsonSync(DB_PATH, currentData.slice(-500));
+        io.to(msg.room).emit('broadcast_message', msg);
+    });
 
-        // Mantener solo los últimos 200 mensajes
-        const updatedData = currentData.slice(-200);
-        fs.writeJsonSync(DB_PATH, updatedData);
-
-        // Reenviar a todos (incluyendo el remitente)
-        io.emit('broadcast_message', msg);
+    socket.on('disconnecting', () => {
+        // Al desconectarse, eliminar de todas las salas
+        for (const roomCode of socket.rooms) {
+            if (rooms[roomCode] && rooms[roomCode][socket.id]) {
+                delete rooms[roomCode][socket.id];
+                io.to(roomCode).emit('update_user_list', Object.values(rooms[roomCode]));
+            }
+        }
     });
 
     socket.on('clear_all', () => {

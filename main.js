@@ -23,30 +23,34 @@ const clearChatBtn = document.getElementById('clear-chat');
 const exportChatBtn = document.getElementById('export-chat');
 const roomIdDisplay = document.getElementById('room-id');
 
+const userListContainer = document.getElementById('user-list');
+const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+const sidebar = document.querySelector('.sidebar');
+const participantCount = document.querySelector('.participant-count');
+
 function initSocket() {
     if (!state.room) return;
 
-    // Configuración robusta para móviles (reconexión agresiva)
     state.socket = io({
         reconnection: true,
         reconnectionAttempts: Infinity,
         reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        timeout: 20000
+        reconnectionDelayMax: 5000
     });
 
     state.socket.on('connect', () => {
-        console.log('Conectado al servidor');
-        state.socket.emit('join_room', state.room);
+        state.socket.emit('join_room', { 
+            roomCode: state.room, 
+            username: state.username 
+        });
         roomIdDisplay.textContent = state.room;
         document.querySelector('.status-indicator').classList.add('online');
         document.querySelector('.user-status').textContent = 'En línea';
-        addSystemMessage(`¡Conexión establecida en sala ${state.room}!`);
     });
 
-    state.socket.on('connect_error', () => {
-        document.querySelector('.status-indicator').classList.remove('online');
-        document.querySelector('.user-status').textContent = 'Reconectando...';
+    state.socket.on('update_user_list', (users) => {
+        renderUserList(users);
+        participantCount.textContent = `${users.length} persona(s) conectada(s)`;
     });
 
     state.socket.on('init_history', (history) => {
@@ -61,8 +65,20 @@ function initSocket() {
 
     state.socket.on('disconnect', () => {
         document.querySelector('.status-indicator').classList.remove('online');
-        document.querySelector('.user-status').textContent = 'Desconectado';
-        addSystemMessage('Se perdió la conexión. Reintentando...');
+        document.querySelector('.user-status').textContent = 'Reconectando...';
+    });
+}
+
+function renderUserList(users) {
+    userListContainer.innerHTML = '';
+    users.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'contact-item';
+        item.innerHTML = `
+            <div class="contact-avatar">${user.charAt(0).toUpperCase()}</div>
+            <div class="contact-name">${user} ${user === state.username ? '(Tú)' : ''}</div>
+        `;
+        userListContainer.appendChild(item);
     });
 }
 
@@ -70,12 +86,10 @@ function initSocket() {
  * UI Functions
  */
 function init() {
-    // Check if room is provided in URL hash (e.g. #N7@k9)
     const hash = window.location.hash.replace('#', '');
     if (hash) {
         state.room = hash;
         if (roomEntry) roomEntry.value = hash;
-        localStorage.setItem('nexus_room', hash);
     }
 
     if (!state.username || !state.room) {
@@ -123,14 +137,12 @@ function addSystemMessage(text) {
 
 function sendMessage(text) {
     if (!text.trim() || !state.socket) return;
-
     const msg = {
         room: state.room,
         user: state.username,
         text: text.trim(),
         time: new Date().toISOString()
     };
-
     state.socket.emit('new_message', msg);
 }
 
@@ -139,6 +151,20 @@ function scrollToBottom() {
 }
 
 // Event Listeners
+toggleSidebarBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+});
+
+// Cerrar sidebar al hacer clic fuera en móvil
+document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768 && 
+        !sidebar.contains(e.target) && 
+        !toggleSidebarBtn.contains(e.target) && 
+        sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+    }
+});
+
 chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
     sendMessage(messageInput.value);
@@ -156,25 +182,20 @@ startBtn.addEventListener('click', () => {
         nameModal.classList.add('hidden');
         setupUserUI();
         initSocket();
-    } else {
-        alert('Por favor, introduce tu nombre y el código de sala.');
     }
 });
 
 clearChatBtn.addEventListener('click', () => {
     state.messages = [];
     renderMessages();
-    addSystemMessage('Pantalla limpia (El historial del servidor no ha sido afectado)');
 });
 
 exportChatBtn.addEventListener('click', () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.messages, null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `nexus_chat_${state.room}_${new Date().toISOString().split('T')[0]}.json`);
-    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.setAttribute("download", `nexus_chat_${state.room}.json`);
     downloadAnchorNode.click();
-    downloadAnchorNode.remove();
 });
 
 init();

@@ -51,9 +51,9 @@
                     </div>
                 </div>
                 <nav class="contacts">
-                    <div class="contact-item active">
-                        <div class="contact-avatar">#</div>
-                        <div class="contact-name">Global Chat</div>
+                    <div class="sidebar-label">Usuarios en línea</div>
+                    <div id="user-list">
+                        <!-- Se llenará dinámicamente -->
                     </div>
                 </nav>
             </aside>
@@ -61,6 +61,9 @@
             <!-- Main Chat Area -->
             <main class="chat-main">
                 <header class="chat-header">
+                    <button id="toggle-sidebar" class="mobile-only" title="Ver Usuarios">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
                     <div class="header-info">
                         <h2>Global Chat</h2>
                         <span class="participant-count">Active Community</span>

@@ -433,5 +433,64 @@ body {
 @media (max-width: 768px) {
   #app { padding: 0; }
   .chat-container { height: 100vh; border-radius: 0; }
-  .sidebar { display: none; }
+  
+  .sidebar {
+    position: absolute;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    z-index: 1001;
+    width: 280px;
+    background: #0c0c0e;
+    transition: left 0.3s ease;
+  }
+  
+  .sidebar.active {
+    left: 0;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+.mobile-only {
+  display: none;
+}
+
+#toggle-sidebar {
+  background: transparent;
+  border: none;
+  color: white;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.sidebar-label {
+  padding: 1rem 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.contact-item {
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: default;
+}
+
+.contact-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--accent-color);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
