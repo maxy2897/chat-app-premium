@@ -24,16 +24,29 @@ const exportChatBtn = document.getElementById('export-chat');
 const roomIdDisplay = document.getElementById('room-id');
 
 function initSocket() {
-    // Si no hay room, no conectamos todavía
     if (!state.room) return;
 
-    state.socket = io();
+    // Configuración robusta para móviles (reconexión agresiva)
+    state.socket = io({
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000
+    });
 
     state.socket.on('connect', () => {
         console.log('Conectado al servidor');
         state.socket.emit('join_room', state.room);
         roomIdDisplay.textContent = state.room;
-        addSystemMessage(`Te has unido a la sala: ${state.room}`);
+        document.querySelector('.status-indicator').classList.add('online');
+        document.querySelector('.user-status').textContent = 'En línea';
+        addSystemMessage(`¡Conexión establecida en sala ${state.room}!`);
+    });
+
+    state.socket.on('connect_error', () => {
+        document.querySelector('.status-indicator').classList.remove('online');
+        document.querySelector('.user-status').textContent = 'Reconectando...';
     });
 
     state.socket.on('init_history', (history) => {
@@ -47,7 +60,9 @@ function initSocket() {
     });
 
     state.socket.on('disconnect', () => {
-        addSystemMessage('Desconectado del servidor.');
+        document.querySelector('.status-indicator').classList.remove('online');
+        document.querySelector('.user-status').textContent = 'Desconectado';
+        addSystemMessage('Se perdió la conexión. Reintentando...');
     });
 }
 
