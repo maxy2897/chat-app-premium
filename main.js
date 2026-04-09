@@ -127,7 +127,7 @@ function renderMessages() {
         const timestamp = new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         
         msgElement.innerHTML = `
-            ${!isMe ? `<span class="message-label">${msg.user}</span>` : ''}
+            <span class="message-label">${isMe ? 'Tú' : msg.user}</span>
             <div class="message-content">
                 ${msg.text}
                 <div class="message-time">${timestamp}</div>
