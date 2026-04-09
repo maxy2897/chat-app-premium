@@ -42,6 +42,7 @@ body {
   max-width: 1200px;
   height: 85vh;
   background: var(--panel-bg);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
@@ -204,8 +205,9 @@ body {
   scrollbar-color: var(--glass-border) transparent;
 }
 
+/* Chrome, Edge, Safari */
 .messages-container::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .messages-container::-webkit-scrollbar-thumb {
@@ -330,8 +332,8 @@ body {
 /* Modal Styling */
 .modal {
   position: fixed;
-  inset: 0;
   background: rgba(0, 0, 0, 0.85);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
