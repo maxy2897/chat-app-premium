@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
         // Guardar mensaje en disco local
         const currentData = fs.readJsonSync(DB_PATH);
         currentData.push(msg);
-        
+
         // Mantener solo los últimos 200 mensajes
         const updatedData = currentData.slice(-200);
         fs.writeJsonSync(DB_PATH, updatedData);
