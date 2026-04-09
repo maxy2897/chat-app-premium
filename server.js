@@ -77,9 +77,11 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('clear_all', () => {
-        fs.writeJsonSync(DB_PATH, []);
-        io.emit('history_cleared');
+    socket.on('clear_room', (roomCode) => {
+        const currentData = fs.readJsonSync(DB_PATH);
+        const newData = currentData.filter(m => m.room !== roomCode);
+        fs.writeJsonSync(DB_PATH, newData);
+        io.to(roomCode).emit('history_cleared');
     });
 
     socket.on('disconnect', () => {

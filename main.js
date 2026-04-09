@@ -4,7 +4,7 @@
 
 const state = {
     username: localStorage.getItem('max_user') || '',
-    room: '', // Se requerirá que el usuario lo introduzca manualmente en cada sesión
+    room: localStorage.getItem('max_room') || '',
     messages: [],
     socket: null
 };
@@ -60,6 +60,11 @@ function initSocket() {
         participantCount.textContent = `${users.length} persona(s) conectada(s)`;
     });
 
+    state.socket.on('history_cleared', () => {
+        state.messages = [];
+        renderMessages();
+    });
+
     state.socket.on('init_history', (history) => {
         state.messages = history;
         renderMessages();
@@ -93,13 +98,18 @@ function renderUserList(users) {
  * UI Functions
  */
 function init() {
-    // Si ya tenemos nombre, lo precargamos en el input para comodidad
-    if (state.username && usernameEntry) {
-        usernameEntry.value = state.username;
+    // Si ya tenemos usuario y sala guardados, saltamos el modal
+    if (state.username && state.room) {
+        if (nameModal) nameModal.classList.add('hidden');
+        setupUserUI();
+        initSocket();
+    } else {
+        // Precargar nombre si existe
+        if (state.username && usernameEntry) {
+            usernameEntry.value = state.username;
+        }
+        if (nameModal) nameModal.classList.remove('hidden');
     }
-    
-    // Mostramos siempre el modal porque la sala ya no es persistente
-    if (nameModal) nameModal.classList.remove('hidden');
 }
 
 function setupUserUI() {
@@ -178,16 +188,17 @@ startBtn.addEventListener('click', () => {
         state.username = userVal;
         state.room = roomVal;
         localStorage.setItem('max_user', userVal);
-        // NO guardamos 'max_room' para obligar a pedirlo la próxima vez
+        localStorage.setItem('max_room', roomVal);
         if (nameModal) nameModal.classList.add('hidden');
         setupUserUI();
         initSocket();
     }
 });
 
-clearChatBtn.addEventListener('click', () => {
-    state.messages = [];
-    renderMessages();
+clearChatBtn.addEventListener('click', () => { // Limpiar Pantalla
+    if (confirm('¿Seguro quieres vaciar la pantalla y borrar el historial global de la sala?')) {
+        if (state.socket) state.socket.emit('clear_room', state.room);
+    }
 });
 
 exportChatBtn.addEventListener('click', () => {
@@ -201,8 +212,17 @@ exportChatBtn.addEventListener('click', () => {
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-        if (confirm('¿Seguro que quieres salir de la sala?')) {
-            window.location.reload();
+        if (confirm('¿Seguro que quieres salir de la sala? Esto eliminará todo el historial de conversaciones para todos.')) {
+            // Borrar historial en el servidor automáticamente
+            if (state.socket) state.socket.emit('clear_room', state.room);
+            
+            // Borrar de la memoria local
+            localStorage.removeItem('max_room');
+            
+            // Recargar para volver al inicio
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
         }
     });
 }
