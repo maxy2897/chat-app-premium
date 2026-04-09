@@ -86,11 +86,7 @@
                 </header>
 
                 <div class="messages-container" id="messages">
-                    <div class="system-message">Iniciando conexión segura P2P...</div>
-                </div>
-
-                <div class="connection-info" id="conn-info">
-                    ID de conexión: <span id="peer-id">...</span>
+                    <div class="system-message">Esperando conexión al servidor...</div>
                 </div>
 
                 <footer class="chat-input-area">
@@ -115,6 +111,7 @@
             <h3>Bienvenido a MAX</h3>
             <p>Introduce tu nombre y el código de sala para entrar.</p>
             <input type="text" id="username-entry" placeholder="Tu nombre..." maxlength="20" />
+            <input type="text" id="room-entry" placeholder="Código de sala (ej. N7@k9)" maxlength="10" />
             <button id="start-btn">Entrar al Chat</button>
         </div>
     </div>
