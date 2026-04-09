@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(__dirname));
 
 // Asegurar que siempre devuelva el index.html para rutas no encontradas (útil para PWAs)
-app.get('*', (req, res) => {
+app.get('(.*)', (req, res) => {
     const indexPath = fs.existsSync(path.join(__dirname, 'dist', 'index.html')) 
         ? path.join(__dirname, 'dist', 'index.html')
         : path.join(__dirname, 'index.html');
