@@ -1,10 +1,10 @@
 /**
- * Nexus Chat - Socket.io Version
+ * MAX Chat - Versión Sincronizada y Persistente
  */
 
 const state = {
-    username: localStorage.getItem('nexus_user') || '',
-    room: localStorage.getItem('nexus_room') || '',
+    username: localStorage.getItem('max_user') || '',
+    room: localStorage.getItem('max_room') || '',
     messages: [],
     socket: null
 };
@@ -29,16 +29,23 @@ const sidebar = document.querySelector('.sidebar');
 const participantCount = document.querySelector('.participant-count');
 
 function initSocket() {
-    if (!state.room) return;
+    if (!state.room || !state.username) return;
+
+    // Si ya existe un socket, desconectarlo antes de crear uno nuevo
+    if (state.socket) {
+        state.socket.disconnect();
+    }
 
     state.socket = io({
         reconnection: true,
         reconnectionAttempts: Infinity,
         reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000
+        reconnectionDelayMax: 5000,
+        timeout: 20000
     });
 
     state.socket.on('connect', () => {
+        console.log('MAX Conectado:', state.room);
         state.socket.emit('join_room', { 
             roomCode: state.room, 
             username: state.username 
@@ -86,18 +93,18 @@ function renderUserList(users) {
  * UI Functions
  */
 function init() {
-    const hash = window.location.hash.replace('#', '');
-    if (hash) {
-        state.room = hash;
-        if (roomEntry) roomEntry.value = hash;
-    }
-
-    if (!state.username || !state.room) {
-        nameModal.classList.remove('hidden');
-    } else {
+    // Si ya tenemos datos guardados, saltamos el modal
+    if (state.username && state.room) {
         nameModal.classList.add('hidden');
         setupUserUI();
         initSocket();
+    } else {
+        nameModal.classList.remove('hidden');
+        // Pre-rellenar sala si viene en la URL
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            roomEntry.value = hash;
+        }
     }
 }
 
@@ -155,7 +162,6 @@ toggleSidebarBtn.addEventListener('click', () => {
     sidebar.classList.toggle('active');
 });
 
-// Cerrar sidebar al hacer clic fuera en móvil
 document.addEventListener('click', (e) => {
     if (window.innerWidth <= 768 && 
         !sidebar.contains(e.target) && 
@@ -177,8 +183,8 @@ startBtn.addEventListener('click', () => {
     if (userVal && roomVal) {
         state.username = userVal;
         state.room = roomVal;
-        localStorage.setItem('nexus_user', userVal);
-        localStorage.setItem('nexus_room', roomVal);
+        localStorage.setItem('max_user', userVal);
+        localStorage.setItem('max_room', roomVal);
         nameModal.classList.add('hidden');
         setupUserUI();
         initSocket();
@@ -194,7 +200,7 @@ exportChatBtn.addEventListener('click', () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.messages, null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `nexus_chat_${state.room}.json`);
+    downloadAnchorNode.setAttribute("download", `max_chat_${state.room}.json`);
     downloadAnchorNode.click();
 });
 

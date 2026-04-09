@@ -19,12 +19,14 @@
   padding: 0;
 }
 
-body {
+html, body {
+  height: 100svh;
+  width: 100vw;
+  overflow: hidden;
+  position: fixed;
   font-family: var(--font-main);
   background-color: var(--bg-color);
   color: var(--text-primary);
-  height: 100vh;
-  overflow: hidden;
   background: radial-gradient(circle at top right, #1e1b4b, #0c0c0e 40%),
               radial-gradient(circle at bottom left, #312e81, #0c0c0e 40%);
 }
@@ -437,8 +439,11 @@ body {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  #app { padding: 0; }
-  .chat-container { height: 100vh; border-radius: 0; }
+  #app { padding: 0; height: 100%; }
+  .chat-container { 
+    height: 100dvh; /* Usa Dynamic Viewport Height */
+    border-radius: 0; 
+  }
   
   .sidebar {
     position: absolute;
