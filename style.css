@@ -321,7 +321,7 @@ html, body {
   padding: 14px 20px;
   color: white;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 16px;
   transition: all 0.3s;
 }
 
@@ -404,6 +404,7 @@ html, body {
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   color: white;
+  font-size: 16px;
   margin-bottom: 1.5rem;
   text-align: center;
 }
