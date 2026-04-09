@@ -16,8 +16,8 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(__dirname));
 
-// Asegurar que siempre devuelva el index.html para rutas no encontradas (útil para PWAs)
-app.get('(.*)', (req, res) => {
+// Red de seguridad: Cualquier otra ruta devolverá el index.html (esto evita errores de Path en Express 5)
+app.use((req, res) => {
     const indexPath = fs.existsSync(path.join(__dirname, 'dist', 'index.html')) 
         ? path.join(__dirname, 'dist', 'index.html')
         : path.join(__dirname, 'index.html');
