@@ -1,12 +1,9 @@
-const CACHE_NAME = 'max-v1';
+const CACHE_NAME = 'max-v2';
 const ASSETS = [
-    './',
-    './index.html',
-    './style.css',
-    './main.js',
-    './manifest.json',
-    './public/logo.png',
-    './logo.png'
+    '/',
+    '/index.html',
+    '/manifest.json',
+    '/logo.png'
 ];
 
 self.addEventListener('install', (event) => {
