@@ -59,7 +59,7 @@ function init() {
     const hash = window.location.hash.replace('#', '');
     if (hash) {
         state.room = hash;
-        roomEntry.value = hash;
+        if (roomEntry) roomEntry.value = hash;
         localStorage.setItem('nexus_room', hash);
     }
 
