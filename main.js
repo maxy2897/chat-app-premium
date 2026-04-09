@@ -199,4 +199,15 @@ exportChatBtn.addEventListener('click', () => {
     downloadAnchorNode.click();
 });
 
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        if (confirm('¿Seguro que quieres salir de la sala? Tendrás que volver a ingresar tu nombre y código de conexión.')) {
+            localStorage.removeItem('max_user');
+            localStorage.removeItem('max_room');
+            window.location.href = window.location.pathname; // Recargar sin hash
+        }
+    });
+}
+
 init();

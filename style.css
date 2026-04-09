@@ -183,6 +183,20 @@ html, body {
 .chat-header h2 {
   font-family: var(--font-display);
   font-size: 1.25rem;
+  margin: 0;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mobile-logo {
+  height: 20px;
+  width: auto;
+  margin-bottom: 2px;
+  filter: brightness(1.2);
 }
 
 .participant-count {
