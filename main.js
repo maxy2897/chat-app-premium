@@ -100,11 +100,6 @@ function init() {
         initSocket();
     } else {
         if (nameModal) nameModal.classList.remove('hidden');
-        // Pre-rellenar sala si viene en la URL
-        const hash = window.location.hash.replace('#', '');
-        if (hash && roomEntry) {
-            roomEntry.value = hash;
-        }
     }
 }
 
