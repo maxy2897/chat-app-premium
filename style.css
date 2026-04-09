@@ -354,13 +354,14 @@ html, body {
 /* Modal Styling */
 .modal {
   position: fixed;
+  inset: 0; /* top/left/right/bottom 0 */
   background: rgba(0, 0, 0, 0.85);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   opacity: 1;
   transition: opacity 0.5s;
 }
